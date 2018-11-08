@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductName="PhonesBookLight" ?>
+<?define ProductVersion="1.0.7.19" ?>
+<?define Description="Phones Book Light" ?>
+<?define SolutionName="PhonesBookLight" ?>
+<?define Keywords="Installer Phones Adress Book Mobile RYIK" ?>
+<?define myPhoto = "Photo" ?>
+<?define ProductCode="155DEC9C-553D-4DD9-AE56-8F5A252BEE59"?>
+<?define UpgradeCode="835C7720-FD6B-4529-BF83-8D3C8D902CA9"?>
+<?define Manufacturer="RYIK"?>
+<Product Id="*" Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" Language="1049" Codepage="1251" UpgradeCode="$(var.UpgradeCode)"> 
+      <!-- or InstallScope="perMachine" -->
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" Platforms="Intel" 
+             Manufacturer="$(var.Manufacturer)" SummaryCodepage="1251" Description="$(var.ProductName)" AdminImage="no" 
+             Comments="$(var.Description)" Keywords="$(var.Keywords)" ShortNames="yes" />
+      
+      <Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high" />
+      <Icon Id="ApplicationIcon" SourceFile="..\PhonesBookLight\bin\Release\ryik.ico" />
+      <Property Id="ARPPRODUCTICON" Value="ApplicationIcon" />
+      <Property Id='ARPNOREPAIR' Value='1'/>
+
+		   <Feature Id="ProductFeature" Title="$(var.ProductName)" Level="1" Description="$(var.Description)" ConfigurableDirectory="$(var.Manufacturer)">
+			    <ComponentGroupRef Id="ProductComponents" />
+          <ComponentRef Id="ApplicationShortcutDesktop" />
+          <ComponentRef Id="ApplicationUserAppFolder" />
+          <ComponentRef Id="ShortcutProgramsFolderApp" />
+          <ComponentRef Id="ShortcutProgramsFolderAppMenuFolder" />
+          <ComponentRef Id="Photo" />
+       </Feature>
+
+
+   <InstallExecuteSequence>
+         <RemoveExistingProducts After="InstallValidate" />
+   </InstallExecuteSequence>
+
+   <Directory Id="TARGETDIR" Name="SourceDir">
+
+			 <Directory Id="LocalAppDataFolder" Name="AppData">  <!--or Id='ApplicationDataFolder' -->
+				 <Directory Id="RYIK" Name="RYIK">                    <!-- Create Folder 'RYIK'-->
+           
+           <Component Id="ApplicationUserAppFolder" Guid="*">
+                <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.SolutionName)" 
+                               Name="Appinstalled" Type="integer" Value="1" KeyPath="yes" />
+                <RemoveFile Id="CleanRYIK" Name="*" On="both" />   
+                <RemoveFolder Id="RemoveRYIK" On="both" />
+                <RemoveFolder Id="CleanupRYIK" On="both" />        
+           </Component>
+           
+           <Directory Id="ProductComponents" Name="$(var.SolutionName)" > <!-- Create Folder '$(var.SolutionName)'-->
+             <Directory Id="Photo" Name="Photo" >
+               <Component Id="Photo" Guid="*">
+                 
+                 <CreateFolder />
+                 <RemoveFolder Id="Photo" On="uninstall" />
+                 <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.SolutionName)"
+                                Name="PholderPhotoInstalled" Type="integer" Value="1" KeyPath="yes" />
+               </Component>
+             </Directory>
+           </Directory>         
+			   </Directory>
+      </Directory> 
+      
+         <Directory Id="DesktopFolder">
+              <Component Id="ApplicationShortcutDesktop" Guid="*">
+              <Shortcut Id="ApplicationDesktopShortcut" Name="$(var.ProductName)" 
+                        Description="$(var.Description)" Target="[ProductComponents]PhonesBookLight.exe" 
+                WorkingDirectory="ProductComponents" />
+              <RemoveFolder Id="DesktopFolder" On="uninstall" />
+              <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.SolutionName)" 
+                             Name="Desktopinstalled" Type="integer" Value="1" KeyPath="yes" />
+              </Component>
+         </Directory>  
+
+         <Directory Id="ProgramMenuFolder">
+           <Directory Id="ApplicationProgramsFolder">
+             <Component Id="ShortcutProgramsFolderApp" Guid="*">
+                <Shortcut Id="ShortcutProgramsFolderApp" Name="$(var.ProductName)" 
+                          Description="$(var.Description)" Target="[ProductComponents]PhonesBookLight.exe" 
+               WorkingDirectory="ProductComponents" />
+                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+                <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.SolutionName)" 
+                               Name="Menuinstalled" Type="integer" Value="1" KeyPath="yes" />
+             </Component>
+             <Directory Id="RYIKProgrammMenuFolder" Name="RYIK">
+               <Component Id="ShortcutProgramsFolderAppMenuFolder" Guid="*">
+                  <Shortcut Id="ShortcutProgramsFolderAppMenuFolder" Name="$(var.ProductName)" 
+                            Description="$(var.Description)" Target="[ProductComponents]PhonesBookLight.exe" 
+                 WorkingDirectory="ProductComponents" />
+                  <RemoveFolder Id="RYIKProgrammMenuFolder" On="uninstall" />
+                  <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.SolutionName)" 
+                                 Name="FolderMenuinstalled" Type="integer" Value="1" KeyPath="yes" />
+               </Component>
+             </Directory>
+           </Directory>
+         </Directory>       
+  
+    </Directory>
+        
+      <ComponentGroup Id="ProductComponents" Directory="ProductComponents">
+        <Component Id="ProductComponent" Guid="39186E65-CFF4-448B-BC57-2C56C95823CD" DiskId="1" Location="source">     
+          <CreateFolder />
+          <File Id="PhonesBookLight" Name="PhonesBookLight.exe" Source="..\PhonesBookLight\bin\Release\PhonesBookLight.exe" />
+          <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.SolutionName)" Name="PhonesBookInstalled" Type="integer" Value="1" KeyPath="yes" />
+          <RemoveFile Id="PhonesBookLight" Name="PhonesBookLight.exe" On="uninstall" />
+          <RemoveFile Id="RemoveProductComponent" Name="*" On="both" />   
+          <RemoveFolder Id="ProductComponents" Directory="ProductComponents" On="both" />        
+          <RemoveFolder Id="ProductComponent" On="both" />        
+          <RemoveFile Id="CleanProductComponents" Name="*" On="both" />   
+          <RemoveFolder Id="CleanupProductComponents" On="both" />            
+        </Component>
+
+     	</ComponentGroup>      
+
+   <Property Id="WIXUI_INSTALLDIR" Value="RYIKProgrammMenuFolder" ></Property>
+    <UIRef Id="WixUI_InstallDir"/>
+    <WixVariable Id="WixUILicenseRtf" Overridable="yes" Value="License.rtf"/>
+    <!-- <UIRef Id="WixUI_Wizard"/> -->
+
+
+	</Product>
+</Wix>
